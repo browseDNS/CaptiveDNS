@@ -72,6 +72,10 @@ private slots:
     void on_whitelistButton_clicked();
     void on_blacklistButton_clicked();
     void on_initialMode_stateChanged(int arg1);
+    
+    void on_editHTMLButton_clicked();
+    void on_aboutApp_clicked();
+
     void on_saveButton_clicked();
     void on_removeButton_clicked();
     void on_hostnameEdit_returnPressed();

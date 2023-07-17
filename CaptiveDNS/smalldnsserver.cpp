@@ -52,10 +52,10 @@ SmallDNSServer::SmallDNSServer(QObject *parent)
     //*.d4c.nintendo.net
     //*.eshop.nintendo.net
     //*.cdn.nintendo.net
-    blacklist.push_back(ListEntry("*srv.nintendo.net"));
-    blacklist.push_back(ListEntry("*d4c.nintendo.net"));
-    blacklist.push_back(ListEntry("*eshop.nintendo.net"));
-    blacklist.push_back(ListEntry("*cdn.nintendo.net"));
+    // blacklist.push_back(ListEntry("*srv.nintendo.net"));
+    // blacklist.push_back(ListEntry("*d4c.nintendo.net"));
+    // blacklist.push_back(ListEntry("*eshop.nintendo.net"));
+    // blacklist.push_back(ListEntry("*cdn.nintendo.net"));
     //Known captive portals (to keep them captive)
     blacklist.push_back(ListEntry("ctest.cdn.nintendo.net"));
     blacklist.push_back(ListEntry("conntest.nintendowifi.net"));

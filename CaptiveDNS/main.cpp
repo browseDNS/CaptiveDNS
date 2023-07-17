@@ -32,13 +32,15 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    a.setOrganizationDomain("YourFriendlyDNS.domain");
-    a.setApplicationName("YourFriendlyDNS");
+    a.setOrganizationDomain("CaptiveDNS.domain");
+    a.setApplicationName("CaptiveDNS");
 
     DNSServerWindow *w = new DNSServerWindow();
     w->show();
 
+
     int r = a.exec();
+
     delete w;
     return r;
 }

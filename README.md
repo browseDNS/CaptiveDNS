@@ -4,7 +4,24 @@ An app to help display a [captive portal](https://en.wikipedia.org/wiki/Captive_
 Based on [YourFriendlyDNS](https://github.com/softwareengineer1/YourFriendlyDNS/), which contains many more advanced options for other self-hosted DNS use cases.
 
 ## Screenshots
-![CaptiveDNS Screenshot]()
+![CaptiveDNS Screenshot](preview.png)
+
+## Captured Domains
+
+If a captive portal test domain is missing here, please file an issue and it will be added to the redirection list.
+
+```
+ctest.cdn.nintendo.net
+conntest.nintendowifi.net
+detectportal.firefox.com
+connectivitycheck.gstatic.com
+connectivitycheck.android.com
+clients1.google.com
+clients3.google.com
+captive.apple.com
+```
+
+This list of domains cannot be configured within CaptiveDNS. To customize it further, check out [YourFriendlyDNS](https://github.com/softwareengineer1/YourFriendlyDNS/).
 
 ## Compiling
 
@@ -18,7 +35,7 @@ make
 ## License
 This software is licensed under the GPLv2.
 
-If you like this software, please support the YourFriendlyDNS author, @softwareengineer1, through one of the below methods!
+If you like this software, please support the YourFriendlyDNS author, [softwareengineer1](https://github.com/softwareengineer1), through one of the below methods!
 
 ```
 BCH: bitcoincash:qzh3knl0xeyrzrxm5paenewsmkm8r4t76glzxmzpqs

@@ -1,3 +1,5 @@
+.vscode
+
 *.app
 *.DS_Store
 *.qmake*
