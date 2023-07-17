@@ -151,7 +151,7 @@ public:
         if(fmt[fmtIndex] == 'B')
         {
             quint8 byte = *(quint8*)source;
-            buf.append(byte);
+            buf.append(byte, sizeof(byte));
             packedLen++;
         }
         else if(fmt[fmtIndex] == 'W')
@@ -205,40 +205,40 @@ public:
         }
         else if(fmt[fmtIndex] == 'z') //Prefixed Length String
         {
-            quint8 prefixedLen;
-            QString *s;
-            if(type_name<decltype(source)>() == type_name<decltype(&buf)>())
-            {
-                QByteArray *src = (QByteArray*)source;
-                prefixedLen = src->size();
-                buf.append(prefixedLen);
-                buf.append(*src);
-                packedLen += prefixedLen + 1;
-            }
-            else if(type_name<decltype(source)>() == type_name<decltype(s)>())
-            {
-                s = (QString*)source;
-                prefixedLen = s->size();
-                buf.append(prefixedLen);
-                buf.append(*s);
-                packedLen += prefixedLen + 1;
-            }
+        //     quint8 prefixedLen;
+        //     QString *s;
+        //     if(type_name<decltype(source)>() == type_name<decltype(&buf)>())
+        //     {
+        //         QByteArray *src = (QByteArray*)source;
+        //         prefixedLen = src->size();
+        //         buf.append(prefixedLen, sizeof(prefixedLen));
+        //         buf.append(*src, prefixedLen);
+        //         packedLen += prefixedLen + 1;
+        //     }
+        //     else if(type_name<decltype(source)>() == type_name<decltype(s)>())
+        //     {
+        //         s = (QString*)source;
+        //         prefixedLen = s->size();
+        //         buf.append(prefixedLen, sizeof(prefixedLen));
+        //         buf.append(*s, prefixedLen);
+        //         packedLen += prefixedLen + 1;
+        //     }
         }
         else if(fmt[fmtIndex] == 'x') //QByteArray or QString
         {
-            QString *s;
-            if(type_name<decltype(source)>() == type_name<decltype(&buf)>())
-            {
-                QByteArray *src = (QByteArray*)source;
-                buf.append(*src);
-                packedLen += src->size();
-            }
-            else if(type_name<decltype(source)>() == type_name<decltype(s)>())
-            {
-                s = (QString*)source;
-                buf.append(*s);
-                packedLen += s->size();
-            }
+            // QString *s;
+            // if(type_name<decltype(source)>() == type_name<decltype(&buf)>())
+            // {
+            //     QByteArray *src = (QByteArray*)source;
+            //     buf.append(*src);
+            //     packedLen += src->size();
+            // }
+            // else if(type_name<decltype(source)>() == type_name<decltype(s)>())
+            // {
+            //     s = (QString*)source;
+            //     buf.append(*s);
+            //     packedLen += s->size();
+            // }
         }
 
         fmtIndex++;

@@ -93,10 +93,10 @@ void DNSServerWindow::serversInitialized()
     server = AppData::get()->dnsServer;
     httpServer = AppData::get()->httpServer;
     connect(server, SIGNAL(queryRespondedTo(ListEntry)), this, SLOT(queryRespondedTo(ListEntry)));
-    connect(server->dnscrypt, &DNSCrypt::displayLastUsedProvider, this, &DNSServerWindow::displayLastUsedProvider);
+    // connect(server->dnscrypt, &DNSCrypt::displayLastUsedProvider, this, &DNSServerWindow::displayLastUsedProvider);
     connect(settings, SIGNAL(clearDNSCache()), server, SLOT(clearDNSCache()));
-    connect(this, &DNSServerWindow::clearSources, settings->sourcerAndStampConverter, &providerSourcerStampConverter::clearSources);
-    connect(this, &DNSServerWindow::loadSource, settings->sourcerAndStampConverter, &providerSourcerStampConverter::loadSource);
+    // connect(this, &DNSServerWindow::clearSources, settings->sourcerAndStampConverter, &providerSourcerStampConverter::clearSources);
+    // connect(this, &DNSServerWindow::loadSource, settings->sourcerAndStampConverter, &providerSourcerStampConverter::loadSource);
     connect(cacheviewer, &CacheViewer::deleteEntriesFromCache, server, &SmallDNSServer::deleteEntriesFromCache);
 
     listeningIPsUpdate();
@@ -195,7 +195,7 @@ void DNSServerWindow::settingsUpdated()
     {
         server->dnscryptEnabled = settings->getDNSCryptEnabled();
         ui->encEnabled->setVisible(server->dnscryptEnabled);
-        server->dnscrypt->newKeyPerRequest = settings->getNewKeyPerRequestEnabled();
+        // server->dnscrypt->newKeyPerRequest = settings->getNewKeyPerRequestEnabled();
         server->blockmode_returnlocalhost = settings->blockmode_localhost;
         server->ipToRespondWith = QHostAddress(settings->getRespondingIP()).toIPv4Address();
         server->cachedMinutesValid = settings->getCachedMinutesValid();
@@ -347,9 +347,9 @@ bool DNSServerWindow::settingsSave()
         json["version"] = "2.1";
         server->dnscryptEnabled = settings->getDNSCryptEnabled();
         json["dnscryptEnabled"] = server->dnscryptEnabled;
-        server->dnscrypt->newKeyPerRequest = settings->getNewKeyPerRequestEnabled();
+        // server->dnscrypt->newKeyPerRequest = settings->getNewKeyPerRequestEnabled();
         json["dedicatedDNSCrypter"] = server->dedicatedDNSCrypter;
-        json["newKeyPerRequest"] = server->dnscrypt->newKeyPerRequest;
+        // json["newKeyPerRequest"] = server->dnscrypt->newKeyPerRequest;
         json["initialMode"] = server->initialMode;
         json["whitelistmode"] = server->whitelistmode;
         json["blockmode_returnlocalhost"] = server->blockmode_returnlocalhost;
@@ -374,15 +374,15 @@ bool DNSServerWindow::settingsSave()
         json["real_dns_servers"] = dnsarray;
 
         QJsonArray sourcesarray;
-        foreach(const ProviderSource &s, settings->sourcerAndStampConverter->providerSources)
-        {
-            QJsonObject subObject;
-            subObject["url"] = s.url;
-            if(s.hash.size() > 0)
-                subObject["hash"] = s.hash.toHex().toStdString().c_str();
-            subObject["lastUpdatedTime"] = s.lastUpdated.toString();
-            sourcesarray.append(subObject);
-        }
+        // foreach(const ProviderSource &s, settings->sourcerAndStampConverter->providerSources)
+        // {
+        //     QJsonObject subObject;
+        //     subObject["url"] = s.url;
+        //     if(s.hash.size() > 0)
+        //         subObject["hash"] = s.hash.toHex().toStdString().c_str();
+        //     subObject["lastUpdatedTime"] = s.lastUpdated.toString();
+        //     sourcesarray.append(subObject);
+        // }
         json["dnscrypt_provider_sources"] = sourcesarray;
 
         QJsonArray whitelistarray;
@@ -464,8 +464,8 @@ bool DNSServerWindow::settingsLoad()
     }
     if(json.contains("newKeyPerRequest") && json["newKeyPerRequest"].isBool())
     {
-        server->dnscrypt->newKeyPerRequest = json["newKeyPerRequest"].toBool();
-        settings->setNewKeyPerRequest(server->dnscrypt->newKeyPerRequest);
+        // server->dnscrypt->newKeyPerRequest = json["newKeyPerRequest"].toBool();
+        // settings->setNewKeyPerRequest(server->dnscrypt->newKeyPerRequest);
     }
     if(json.contains("initialMode") && json["initialMode"].isBool())
     {

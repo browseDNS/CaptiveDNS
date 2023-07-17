@@ -1,0 +1,21 @@
+name: Build CaptiveDNS
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  all:
+    strategy:
+      matrix:
+        os: [ubuntu, windows, macos]
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+    - uses: actions/checkout@main
+    - name: Build ${{ matrix.platform }}
+      shell: bash
+      run: cd CaptiveDNS && qmake && make

@@ -68,9 +68,9 @@ SmallDNSServer::SmallDNSServer(QObject *parent)
 
     connect(&serversock, &QUdpSocket::readyRead, this, &SmallDNSServer::processDNSRequests);
     connect(&clientsock, &QUdpSocket::readyRead, this, &SmallDNSServer::processLookups);
-    dnscrypt = new DNSCrypt();
-    if(dnscrypt)
-        connect(dnscrypt, &DNSCrypt::decryptedLookupDoneSendResponseNow, this, &SmallDNSServer::decryptedLookupDoneSendResponseNow);
+    // dnscrypt = new DNSCrypt();
+    // if(dnscrypt)
+    //     connect(dnscrypt, &DNSCrypt::decryptedLookupDoneSendResponseNow, this, &SmallDNSServer::decryptedLookupDoneSendResponseNow);
 }
 
 bool SmallDNSServer::startServer(QHostAddress address, quint16 port, bool reuse)
@@ -112,9 +112,9 @@ void SmallDNSServer::determineDoHDoTLSProviders()
     {
         if(p.contains("sdns://"))
         {
-            DNSCryptProvider provider(p.toUtf8());
-            if(provider.protocolVersion == 2 || provider.protocolVersion == 3)
-                v2and3Providers.append(provider.hostname);
+            // DNSCryptProvider provider(p.toUtf8());
+            // if(provider.protocolVersion == 2 || provider.protocolVersion == 3)
+            //     v2and3Providers.append(provider.hostname);
         }
     }
 }
@@ -318,13 +318,13 @@ void SmallDNSServer::processDNSRequests()
                     qDebug() << "Making encrypted DNS request type:" << dns.question.qtype << "for domain:" << dns.domainString << "request id:" << dns.header.id << "datagram:" << datagram;
                     if(useDedicatedDNSCryptProviderToResolveV2And3Hosts)
                     {
-                        dnscrypt->setProvider(dedicatedDNSCrypter);
+                        // dnscrypt->setProvider(dedicatedDNSCrypter);
                         qDebug() << "Using dedicated DNSCrypt provider to resolve DoH/DoTLS provider's host:" << dns.domainString;
                     }
-                    else
-                        dnscrypt->setProvider(selectRandomDNSCryptServer());
+                    // else 
+                        // dnscrypt->setProvider(selectRandomDNSCryptServer());
 
-                    dnscrypt->makeEncryptedRequest(dns);
+                    // dnscrypt->makeEncryptedRequest(dns);
                 }
                 else
                 {

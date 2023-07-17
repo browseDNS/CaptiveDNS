@@ -9,10 +9,18 @@ Based on [YourFriendlyDNS](https://github.com/softwareengineer1/YourFriendlyDNS/
 ## Compiling
 
 ```
-cd Source
+git clone git@github.com:BrowseDNS/CaptiveDNS.git
+cd CaptiveDNS/CaptiveDNS
 qmake
 make
 ```
 
 ## License
 This software is licensed under the GPLv2.
+
+If you like this software, please support the YourFriendlyDNS author, @softwareengineer1, through one of the below methods!
+
+```
+BCH: bitcoincash:qzh3knl0xeyrzrxm5paenewsmkm8r4t76glzxmzpqs
+BTC: 1279WngWQUTV56UcTvzVAnNdR3Z7qb6R8j
+```

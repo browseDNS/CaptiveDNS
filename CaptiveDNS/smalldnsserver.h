@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <QProcess>
 #include "androidsuop.h"
 #include "initialresponse.h"
-#include "dnscrypt.h" //Including our DNSCrypt class and helpers, giving us DNSCrypt protocol version 1,2,3 support!
+// #include "dnscrypt.h" //Including our DNSCrypt class and helpers, giving us DNSCrypt protocol version 1,2,3 support!
 
 /* YourFriendlyDNS - A really awesome multi-platform (lin,win,mac,android) local caching and proxying dns server!
 Copyright (C) 2018  softwareengineer1 @ github.com/softwareengineer1
@@ -95,7 +95,7 @@ public:
     QVector<Q_IPV6ADDR> listeningIPv6s;
     std::vector<DNSInfo> cachedDNSResponses;
     QUdpSocket serversock;
-    DNSCrypt *dnscrypt;
+    // DNSCrypt *dnscrypt;
 
 private:
     ListEntry* getListEntry(const std::string &tame, int listType);

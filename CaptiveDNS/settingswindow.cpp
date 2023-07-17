@@ -32,12 +32,12 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui
 {
     ui->setupUi(this);
     indexhtml = new IndexHTML();
-    sourcerAndStampConverter = new providerSourcerStampConverter();
-    if(sourcerAndStampConverter)
-    {
-        connect(this, &SettingsWindow::decodeStamp, sourcerAndStampConverter, &providerSourcerStampConverter::decodeStamp);
-        connect(sourcerAndStampConverter, &providerSourcerStampConverter::addToServerList, this, &SettingsWindow::addToServerList);
-    }
+    // sourcerAndStampConverter = new providerSourcerStampConverter();
+    // if(sourcerAndStampConverter)
+    // {
+    //     connect(this, &SettingsWindow::decodeStamp, sourcerAndStampConverter, &providerSourcerStampConverter::decodeStamp);
+    //     connect(sourcerAndStampConverter, &providerSourcerStampConverter::addToServerList, this, &SettingsWindow::addToServerList);
+    // }
     blockmode_localhost = true;
 
     #ifdef Q_OS_MACOS
@@ -53,8 +53,8 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui
 
 SettingsWindow::~SettingsWindow()
 {
-    if(sourcerAndStampConverter)
-        delete sourcerAndStampConverter;
+    // if(sourcerAndStampConverter)
+    //     delete sourcerAndStampConverter;
     if(indexhtml)
         delete indexhtml;
     delete ui;
@@ -339,12 +339,12 @@ void SettingsWindow::on_backButton_clicked()
 
 void SettingsWindow::on_getProvidersButton_clicked()
 {
-    if(sourcerAndStampConverter)
-        sourcerAndStampConverter->show();
+    // if(sourcerAndStampConverter)
+    //     sourcerAndStampConverter->show();
 }
 
 void SettingsWindow::on_realdnsservers_itemClicked(QListWidgetItem *item)
 {
-    if(sourcerAndStampConverter && item->text().startsWith("sdns://"))
-        emit decodeStamp(item->text());
+    // if(sourcerAndStampConverter && item->text().startsWith("sdns://"))
+    //     emit decodeStamp(item->text());
 }

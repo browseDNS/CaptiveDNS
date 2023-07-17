@@ -5,7 +5,7 @@
 #include <QListWidget>
 #include <QDebug>
 #include "indexhtml.h"
-#include "providersourcerstampconverter.h"
+// #include "providersourcerstampconverter.h"
 
 /* YourFriendlyDNS - A really awesome multi-platform (lin,win,mac,android) local caching and proxying dns server!
 Copyright (C) 2018  softwareengineer1 @ github.com/softwareengineer1
@@ -85,7 +85,7 @@ public:
     explicit SettingsWindow(QWidget *parent = 0);
     ~SettingsWindow();
     IndexHTML *indexhtml;
-    providerSourcerStampConverter *sourcerAndStampConverter;
+    // providerSourcerStampConverter *sourcerAndStampConverter;
     QString returnDedicatedDNSCrypter();
     QVector<QString> returnRealDNSServers();
     void clearDNSServers();
