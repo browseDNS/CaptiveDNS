@@ -63,6 +63,8 @@ public slots:
     void htmlChanged(QString &html);
     void setIPToFirstListening();
 
+    void showInFolder(const QString& path);
+
 private slots:
     void settingsUpdated();
     void queryRespondedTo(ListEntry e);

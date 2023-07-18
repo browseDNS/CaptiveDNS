@@ -11,36 +11,68 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>index.html</string>
+   <string>Edit Landing Page</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QPushButton" name="pushButton_3">
+          <property name="text">
+           <string>Reload from Disk</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="text">
+           <string>Show in File Browser</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>Reset to Default</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
        <widget class="QPlainTextEdit" name="html">
+        <property name="font">
+         <font>
+          <family>Courier New</family>
+         </font>
+        </property>
         <property name="plainText">
          <string>&lt;html&gt;
-&lt;head&gt;&lt;title&gt;Your Landing Page! &lt;/title&gt;
-&lt;body bgcolor=&quot;skyblue&quot;&gt;
-&lt;input type=&quot;text&quot; name=&quot;urlfield&quot; id=&quot;urlfield&quot; maxlength=&quot;200&quot; size=&quot;75&quot;&gt;&lt;/input&gt;&lt;input type=&quot;button&quot; name=&quot;send&quot; id=&quot;send&quot; value=&quot;Go&quot; onclick=&quot;go()&quot;&gt;&lt;/input&gt;
-&lt;h1&gt; Your Landing Page!&lt;/h1&gt; &lt;a href=&quot;https://startpage.com/&quot;&gt;Start!&lt;/a&gt;
-&lt;script&gt;
-function go() {
-    parent.window.location.href=document.getElementById(&quot;urlfield&quot;).value;
-}
-&lt;/script&gt;
-&lt;/body&gt;
+HTML content goes here
 &lt;/html&gt;</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="okButton">
-        <property name="text">
-         <string>OK</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QPushButton" name="pushButton_4">
+          <property name="text">
+           <string>Cancel</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="okButton">
+          <property name="text">
+           <string>Save and Apply</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>

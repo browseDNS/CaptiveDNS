@@ -43,8 +43,7 @@ DNSServerWindow::DNSServerWindow(QWidget *parent) : QMainWindow(parent), ui(new 
         qDebug() << "CaptiveDNS settings storage location:" << settingspath;
 
     settingspath += QDir::separator();
-    settingspath += "CaptiveDNS.settings";
-    qDebug() << "CaptiveDNS settings file path:" << settingspath;
+    qDebug() << "CaptiveDNS settings location:" << settingspath;
 
     settings = new SettingsWindow();
     connect(settings, SIGNAL(settingsUpdated()), this, SLOT(settingsUpdated()));
@@ -139,11 +138,11 @@ void DNSServerWindow::listeningIPsUpdate()
         {
             if(!list[i].isLoopback())
             {
-                if(listeningips == "") listeningips = "Local DNS Address:\n";
+                // if(listeningips == "") listeningips = "Local DNS Address:\n";
                 if(list[i].protocol() == QAbstractSocket::IPv4Protocol)
                 {
                     ipslist.append(QHostAddress(list[i].toString()).toIPv4Address());
-                    listeningips += "  " + list[i].toString() + ", ";
+                    listeningips += list[i].toString() + "\n";
                 }
                 // No ipv6 in captivedns (yet?)
 
@@ -154,8 +153,8 @@ void DNSServerWindow::listeningIPsUpdate()
                 // }
             }
         }
-        listeningips.truncate(listeningips.size()-2);
-        listeningips.append("\n\nEnter the above address into your device's DNS settings.");
+        listeningips.truncate(listeningips.size()-1);
+        // listeningips.append("\n\nEnter the above address into your device's DNS settings.");
     }
 
     if(ipslist.size() > 0)
@@ -425,8 +424,41 @@ bool DNSServerWindow::settingsSave()
     // return false;
 }
 
+void DNSServerWindow::showInFolder(const QString& path)
+{
+    QFileInfo info(path);
+#if defined(Q_OS_WIN)
+    QStringList args;
+    if (!info.isDir())
+        args << "/select,";
+    args << QDir::toNativeSeparators(path);
+    if (QProcess::startDetached("explorer", args))
+        return;
+#elif defined(Q_OS_MAC)
+    QStringList args;
+    args << "-e";
+    args << "tell application \"Finder\"";
+    args << "-e";
+    args << "activate";
+    args << "-e";
+    args << "select POSIX file \"" + path + "\"";
+    args << "-e";
+    args << "end tell";
+    args << "-e";
+    args << "return";
+    if (!QProcess::execute("/usr/bin/osascript", args))
+        return;
+#endif
+    QDesktopServices::openUrl(QUrl::fromLocalFile(info.isDir()? path : info.path()));
+}
+
 void DNSServerWindow::on_editHTMLButton_clicked() {
-    settings->indexhtml->show();
+    // this editor window kind-of works, but let's just open the containing folder in the system file browser instead
+    // TODO: re-enable this later
+    // settings->indexhtml->show();
+
+    // open html folder
+    showInFolder(httpServer->getIndexHTMLPath());
 }
 
 void DNSServerWindow::on_aboutApp_clicked() {
@@ -474,267 +506,15 @@ bool DNSServerWindow::settingsLoad()
     // always return our own IP
     setIPToFirstListening();
 
-    settings->autoinject = false;
-    settings->setAutoInject(false);
-
-    // read index.html from current directory
-    QFile indexhtml("index.html");
-    if(indexhtml.open(QFile::ReadOnly))
-    {
-        // read index.html
-        html = indexhtml.readAll();
-        indexhtml.close();
-    }
-    else
-    {
-        // no index.html, so create one
-        html = "\
-        <html><head>\n\
-            <title>CaptiveDNS</title>\n\
-            <style>\n\
-                body {\n\
-                    font-family: sans-serif;\n\
-                    background-color: #eee;\n\
-                }\n\
-                h1 {\n\
-                    font-size: 1.5em;\n\
-                    background-color: #333;\n\
-                    color: #fff;\n\
-                    text-align: center;\n\
-                    padding: 0.5em;\n\
-                }\n\
-                p, li {\n\
-                    margin-left: 2em;\n\
-                    font-size: 1.2em;\n\
-                }\n\
-            </style>\n\
-        </head><body>\n\
-            <h1>CaptiveDNS</h1>\n\
-            <p>Welcome to the CaptiveDNS landing page!</p>\n\
-            <p>Quick Links:</p>\n\
-            <ul>\n\
-                <li><a href=\"https://browsedns.net\">BrowseDNS</a></li>\n\
-                <li><a href=\"https://dns.switchbru.com\">Switchbru Dashboard</a></li>\n\
-                <li><a href=\"https://google.com\">Google</a></li>\n\
-                <li><a href=\"https://duckduckgo.com\">DuckDuckGo</a></li>\n\
-                <li><a href=\"https://startpage.com\">StartPage</a></li>\n\
-            </ul>\n\
-            <p>To customize this page, use the \"Edit Landing Page\" button in the CaptiveDNS app.</p>\n\
-            <p>For source code and license information, see <a href=\"https://github.com/browsedns/captivedns\">here</a>.</p>\n\
-            <p><a href=\"javascript:window.location.reload();\">Reload Page</a></p>\n\
-        </body></html>";
-
-        QFile indexhtml("index.html");
-        if(indexhtml.open(QFile::WriteOnly | QIODevice::Text))
-        {
-            QTextStream out(&indexhtml);
-            out << html << Qt::endl;
-        }
-    }
-    htmlChanged(html);
-    if(settings && settings->indexhtml)
-        settings->indexhtml->setHTML(html);
-
-    return true; // no settings
-
-    QFile file(settingspath);
-    if(!file.open(QFile::ReadOnly))
-    {
-        settingsSave();
-        if(!file.open(QFile::ReadOnly))
-            return false;
-    }
-
-    QJsonObject json = QJsonDocument::fromJson(file.readAll()).object();
-
-    if(json.contains("dnscryptEnabled") && json["dnscryptEnabled"].isBool())
-    {
-        server->dnscryptEnabled = json["dnscryptEnabled"].toBool();
-        settings->setDNSCryptEnabled(server->dnscryptEnabled);
-    }
-    if(json.contains("dedicatedDNSCrypter") && json["dedicatedDNSCrypter"].isString())
-    {
-        server->dedicatedDNSCrypter = json["dedicatedDNSCrypter"].toString();
-    }
-    if(json.contains("newKeyPerRequest") && json["newKeyPerRequest"].isBool())
-    {
-        // server->dnscrypt->newKeyPerRequest = json["newKeyPerRequest"].toBool();
-        // settings->setNewKeyPerRequest(server->dnscrypt->newKeyPerRequest);
-    }
-    if(json.contains("initialMode") && json["initialMode"].isBool())
-    {
-        server->initialMode = json["initialMode"].toBool();
-        // ui->initialMode->setChecked(server->initialMode);
-    }
-    if(json.contains("blockmode_returnlocalhost") && json["blockmode_returnlocalhost"].isBool())
-    {
-        server->blockmode_returnlocalhost = json["blockmode_returnlocalhost"].toBool();
-        settings->blockmode_localhost = server->blockmode_returnlocalhost;
-        if(!settings->blockmode_localhost)
-            settings->setBlockOptionNoResponse();
-    }
-
-    if(json.contains("ipToRespondWith") && json["ipToRespondWith"].isDouble())
-    {
-        server->ipToRespondWith = json["ipToRespondWith"].toInt();
-        qDebug() << "Loading respondingIP:" << QHostAddress(server->ipToRespondWith).toString();
-        settings->setRespondingIP(QHostAddress(server->ipToRespondWith).toString());
-    }
-    if(json.contains("autoinjectip") && json["autoinjectip"].isBool())
-    {
-        settings->autoinject = json["autoinjectip"].toBool();
-        if(settings->autoinject)
-        {
-            settings->setAutoInject(settings->autoinject);
-        }
-    }
-    else
-    {
-        settings->autoinject = true;
-        settings->setAutoInject(true);
-    }
-
-    if(json.contains("cachedMinutesValid") && json["cachedMinutesValid"].isDouble())
-    {
-        server->cachedMinutesValid = json["cachedMinutesValid"].toInt();
-        settings->setCachedMinutesValid(server->cachedMinutesValid);
-    }
-    if(json.contains("dnsTTL") && json["dnsTTL"].isDouble())
-    {
-        server->dnsTTL = json["dnsTTL"].toInt();
-        settings->setdnsTTL(server->dnsTTL);
-    }
-    if(json.contains("autoTTL") && json["autoTTL"].isBool())
-    {
-        server->autoTTL = json["autoTTL"].toBool();
-        settings->setAutoTTL(server->autoTTL);
-    }
-
-    if(json.contains("html") && json["html"].isString())
-    {
-        html = json["html"].toString();
-        htmlChanged(html);
-        if(settings && settings->indexhtml)
-            settings->indexhtml->setHTML(html);
-    }
-
-    if(json.contains("real_dns_servers") && json["real_dns_servers"].isArray())
-    {
-        QJsonArray serversarray=json["real_dns_servers"].toArray();
-        settings->clearDNSServers();
-        server->realdns.clear();
-        server->realdns.reserve(serversarray.size());
-        for(int i=0; i<serversarray.size(); ++i)
-        {
-            QString dns=serversarray[i].toString();
-            qDebug() << "dns server loaded:" << dns;
-            server->realdns.push_back(dns);
-            settings->appendDNSServer(dns);
-        }
-    }
-
-    if(json.contains("dnscrypt_provider_sources") && json["dnscrypt_provider_sources"].isArray())
-    {
-        emit clearSources();
-        QJsonArray sourcesarray = json["dnscrypt_provider_sources"].toArray();
-        for(int i = 0; i < sourcesarray.size(); i++)
-        {
-            QString url;
-            QByteArray hash;
-            QDateTime lastUpdated;
-            QJsonObject source = sourcesarray[i].toObject();
-            if(source.contains("url") && source["url"].isString())
-            {
-                url = source["url"].toString();
-            }
-            if(source.contains("hash") && source["hash"].isString())
-                hash = QByteArray::fromHex(source["hash"].toString().toUtf8());
-            if(source.contains("lastUpdatedTime") && source["lastUpdatedTime"].isString())
-                lastUpdated = QDateTime::fromString(source["lastUpdatedTime"].toString());
-
-            qDebug() << "Provider source loaded:" << url << hash << lastUpdated;
-            emit loadSource(url, false, hash, lastUpdated);
-        }
-        QJsonObject source = sourcesarray[0].toObject();
-        if(sourcesarray.size() > 0 && source.contains("url") && source["url"].isString())
-            emit loadSource(source["url"].toString());
-    }
-    else
-    {
-        emit clearSources();
-        emit loadSource("https://download.dnscrypt.info/dnscrypt-resolvers/v2/public-resolvers.md", true);
-        emit loadSource("https://download.dnscrypt.info/dnscrypt-resolvers/v2/opennic.md", true);
-        emit loadSource("https://download.dnscrypt.info/dnscrypt-resolvers/v2/parental-control.md", true);
-        emit loadSource("https://raw.githubusercontent.com/softwareengineer1/YourFriendlyDNS/master/TestProviders.md", true);
-        emit loadSource("https://download.dnscrypt.info/dnscrypt-resolvers/v2/public-resolvers.md");
-    }
-
-    if(json.contains("whitelist") && json["whitelist"].isArray())
-    {
-        QJsonArray whitelistarray=json["whitelist"].toArray();
-        server->whitelist.clear();
-        server->whitelist.reserve(whitelistarray.size());
-        for(int i=0; i<whitelistarray.size(); ++i)
-        {
-            ListEntry e;
-            QJsonObject entry=whitelistarray[i].toObject();
-            if(entry.contains("hostname") && entry["hostname"].isString())
-                e.hostname = entry["hostname"].toString();
-            if(entry.contains("ip") && entry["ip"].isDouble())
-                e.ip = entry["ip"].toInt();
-
-            qDebug() << "whitelist entry loaded:" << e.hostname << QHostAddress(e.ip);
-            server->whitelist.push_back(e);
-        }
-    }
-
-    if(json.contains("blacklist") && json["blacklist"].isArray())
-    {
-        QJsonArray blacklistarray=json["blacklist"].toArray();
-        server->blacklist.clear();
-        server->blacklist.reserve(blacklistarray.size());
-        for(int i=0; i<blacklistarray.size(); ++i)
-        {
-            ListEntry e;
-            QJsonObject entry=blacklistarray[i].toObject();
-            if(entry.contains("hostname") && entry["hostname"].isString())
-                e.hostname = entry["hostname"].toString();
-            if(entry.contains("ip") && entry["ip"].isDouble())
-                e.ip = entry["ip"].toInt();
-
-            qDebug() << "blacklist entry loaded:" << e.hostname << QHostAddress(e.ip);
-            server->blacklist.push_back(e);
-        }
-    }
-
-    if(json.contains("whitelistmode") && json["whitelistmode"].isBool())
-    {
-        server->whitelistmode = json["whitelistmode"].toBool();
-        if(!server->whitelistmode)
-            on_blacklistButton_clicked();
-    }
-
-    if(json.contains("version") && json["version"].isString())
-    {
-        version = json["version"].toString();
-        if(version != "2.0")
-        {
-            //Enabling encryption by default!
-            server->realdns.append("sdns://AQAAAAAAAAAADjIwOC42Ny4yMjAuMjIwILc1EUAgbyJdPivYItf9aR6hwzzI1maNDL4Ev6vKQ_t5GzIuZG5zY3J5cHQtY2VydC5vcGVuZG5zLmNvbQ");
-            server->dnscryptEnabled = true;
-            settings->setDNSCryptEnabled();
-        }
-    }
-    else
-    {
-        //save file from below 1.1 (when version number started being saved in settings file)
-        autoCaptureCaptivePortals();
-    }
+    settings->autoinject = true;
+    settings->setAutoInject(true);
 
     refreshList();
 
-    file.close();
-    return true;
+    // create the landing.html file if it doesn't exist
+    httpServer->createLanding();
+
+    return true; // no settings
 }
 
 void DNSServerWindow::on_initialMode_stateChanged(int arg1)
@@ -749,7 +529,7 @@ void DNSServerWindow::on_initialMode_stateChanged(int arg1)
 
 void DNSServerWindow::on_saveButton_clicked()
 {
-    settingsSave();
+    // settingsSave();
 }
 
 void DNSServerWindow::on_removeButton_clicked()

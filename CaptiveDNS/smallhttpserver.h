@@ -41,6 +41,10 @@ public:
     bool startServer(QHostAddress address = QHostAddress::AnyIPv4, quint16 port = 80);
     void setHTML(QString html);
 
+    QString getIndexHTMLPath();
+    QString getHTMLContent();
+    void createLanding();
+
 private:
     QString html, response_header, contentType, encodingType, acceptRanges, connection;
 

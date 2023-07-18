@@ -35,7 +35,7 @@ SmallDNSServer::SmallDNSServer(QObject *parent)
     dnsTTL = 4200;
     inTimeout = 0;
     numSentRequests = numReceivedResponses = 0;
-    dnscryptEnabled = true; //Encryption now enabled by default (and there's no fallback to plaintext dns either for security, you have to manually disable it to use regular dns again)
+    dnscryptEnabled = false;
     dedicatedDNSCrypter = "sdns://AQAAAAAAAAAADjIwOC42Ny4yMjAuMjIwILc1EUAgbyJdPivYItf9aR6hwzzI1maNDL4Ev6vKQ_t5GzIuZG5zY3J5cHQtY2VydC5vcGVuZG5zLmNvbQ";
 
     whitelistmode = initialMode = blockmode_returnlocalhost = true;

@@ -4,7 +4,7 @@ An app to help display a [captive portal](https://en.wikipedia.org/wiki/Captive_
 Based on [YourFriendlyDNS](https://github.com/softwareengineer1/YourFriendlyDNS/), which contains many more advanced options for other self-hosted DNS use cases.
 
 ## Screenshots
-![CaptiveDNS Screenshot](preview.png)
+<img src="preview.png" width="317" alt="CaptiveDNS Screenshot" />
 
 ## Captured Domains
 

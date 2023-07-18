@@ -16,6 +16,8 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     steps:
     - uses: actions/checkout@main
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
     - name: Build ${{ matrix.platform }}
       shell: bash
       run: cd CaptiveDNS && qmake && make

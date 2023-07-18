@@ -1,5 +1,15 @@
 #include "smallhttpserver.h"
 
+#include <QDesktopServices>
+#include <QNetworkDatagram>
+#include <QNetworkInterface>
+#include <QDnsLookup>
+#include <QHostAddress>
+#include <QHostInfo>
+#include <QtEndian>
+#include <QtCore>
+#include <QProcess>
+
 /* YourFriendlyDNS - A really awesome multi-platform (lin,win,mac,android) local caching and proxying dns server!
 Copyright (C) 2018  softwareengineer1 @ github.com/softwareengineer1
 Support my work by sending me some Bitcoin or Bitcoin Cash in the value of what you valued one or more of my software projects,
@@ -30,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 SmallHTTPServer::SmallHTTPServer(QObject *parent)
 {
     Q_UNUSED(parent);
-    html = "<html><head><title>Your Landing Page!</title><body bgcolor=\"skyblue\"><input type=\"text\" name=\"urlfield\" id=\"urlfield\" maxlength=\"200\" size=\"75\"></input><input type=\"button\" name=\"send\" id=\"send\" value=\"Go\" onclick=\"go()\"></input><h1>Your Landing Page!</h1> <a href=\"https://startpage.com/\">Start!</a><script>function go() { parent.window.location.href=document.getElementById(\"urlfield\").value; }</script></body></html>";
+    html = "CaptiveDNS is working, but you shouldn't be seeing this message!";
     response_header=R"(HTTP/1.1 200 OK
 Content-Type: %1
 Content-Encoding: %2
@@ -59,8 +69,102 @@ void SmallHTTPServer::setHTML(QString html)
     this->html = html;
 }
 
+QString SmallHTTPServer::getIndexHTMLPath() {
+    // TODO: copied from dnsserverwindow.cpp, refactor this
+    auto settingspath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    settingspath += QDir::separator();
+    return settingspath + "landing.html";
+}
+
+// we never cache the index page, and just always read it from disk
+// this has worse performance, but it's easier to edit and reload
+QString SmallHTTPServer::getHTMLContent()
+{
+    // html = settings->indexhtml->getHTML();
+
+    // read the html from the landing page
+    auto landingPath = getIndexHTMLPath();
+
+    // create it, if it doesn't exist
+    createLanding();
+
+    if (QFile::exists(landingPath)) {
+        QFile file(landingPath);
+        if (file.open(QIODevice::ReadOnly)) {
+            html = file.readAll();
+            file.close();
+        }
+    }
+
+    return html;
+}
+
+// creates the landing page, if it doesn't already exist
+void SmallHTTPServer::createLanding()
+{
+    auto landingPath = getIndexHTMLPath();
+    if (!QFile::exists(landingPath)) {
+        auto defaultHtml = "\
+<html><head>\n\
+    <title>CaptiveDNS</title>\n\
+    <style>\n\
+        body {\n\
+            font-family: sans-serif;\n\
+            background-color: #eee;\n\
+        }\n\
+        h1 {\n\
+            font-size: 1.5em;\n\
+            background-color: #333;\n\
+            color: #fff;\n\
+            text-align: center;\n\
+            padding: 0.5em;\n\
+        }\n\
+        p, li {\n\
+            margin-left: 2em;\n\
+            font-size: 1.2em;\n\
+        }\n\
+    </style>\n\
+</head><body>\n\
+    <h1>CaptiveDNS</h1>\n\
+    <p>Welcome to the CaptiveDNS landing page!</p>\n\
+    <p>Quick Links:</p>\n\
+    <ul>\n\
+        <li><a href=\"https://browsedns.net\">BrowseDNS</a></li>\n\
+        <li><a href=\"https://dns.switchbru.com\">Switchbru Dashboard</a></li>\n\
+        <li><a href=\"https://google.com\">Google</a></li>\n\
+        <li><a href=\"https://duckduckgo.com\">DuckDuckGo</a></li>\n\
+        <li><a href=\"https://startpage.com\">StartPage</a></li>\n\
+    </ul>\n\
+    <p>To customize this page, press \"Edit Landing Page\" in the CaptiveDNS app, and then open `landing.html` in a text editor.</p>\n\
+    <p>For source code and license information, see <a href=\"https://github.com/browsedns/captivedns\">here</a>.</p>\n\
+    <p><a href=\"javascript:window.location.reload();\">Reload Page</a></p>\n\
+</body></html>";
+
+        QFile indexhtml(landingPath);
+        if(indexhtml.open(QFile::WriteOnly | QIODevice::Text))
+        {
+            QTextStream out(&indexhtml);
+            out << defaultHtml << Qt::endl;
+        }
+
+        // if the readme doesn't exist, create it
+        // auto readmePath = settingspath + "README.txt";
+        // if (!QFile::exists(readmePath)) {
+        //     QFile readme(readmePath);
+        //     if(readme.open(QFile::WriteOnly | QIODevice::Text))
+        //     {
+        //         QTextStream out(&readme);
+        //         out << "This is the CaptiveDNS internal folder. You can customize the captive portal start page by editing the landing.html file in a text editor." << Qt::endl;
+        //     }
+        // }
+    }
+}
+
 void SmallHTTPServer::returnIndexPage()
 {
+    // always reload the html content in case it changed
+    getHTMLContent();
+
     QTcpSocket *socket = nextPendingConnection();
     connect(socket, &QTcpSocket::disconnected, socket, &QObject::deleteLater);
 
