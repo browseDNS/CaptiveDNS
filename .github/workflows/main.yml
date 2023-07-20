@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - ci-release
   pull_request:
     branches:
       - main
@@ -21,4 +22,8 @@ jobs:
     - uses: ilammy/msvc-dev-cmd@v1
     - name: Build ${{ matrix.platform }}
       shell: bash
-      run: cd CaptiveDNS && qmake && make
+      run: cd CaptiveDNS && qmake
+    - uses: actions/upload-artifact@v3
+      with:
+        name: Makefile.Release
+        path: ./CaptiveDNS/Makefile.Release
