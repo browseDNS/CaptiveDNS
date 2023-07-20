@@ -56,6 +56,7 @@ public:
 signals:
     void serversInitialized();
     void androidInit();
+    void displayErrorPopup(QString error);
 };
 
 #endif // MESSAGESTHREAD_H

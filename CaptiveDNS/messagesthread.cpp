@@ -66,6 +66,7 @@ void MessagesThread::run()
 
     if(data->dnsServer->startServer(QHostAddress::Any, data->dnsServerPort))
         qDebug() << "DNS server started on address:" << data->dnsServer->serversock.localAddress() << "and port:" << data->dnsServer->serversock.localPort();
+
     if(data->httpServer->startServer(QHostAddress::Any, data->httpServerPort))
         qDebug() << "HTTP server started on address:" << data->httpServer->serverAddress() << "and port:" << data->httpServer->serverPort();
 

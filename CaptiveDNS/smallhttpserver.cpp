@@ -135,7 +135,7 @@ void SmallHTTPServer::createLanding()
         <li><a href=\"https://duckduckgo.com\">DuckDuckGo</a></li>\n\
         <li><a href=\"https://startpage.com\">StartPage</a></li>\n\
     </ul>\n\
-    <p>To customize this page, press \"Edit Landing Page\" in the CaptiveDNS app, and then open `landing.html` in a text editor.</p>\n\
+    <p>To customize this page, press \"Edit Landing Page\" in the CaptiveDNS app, and then open <code>landing.html</code> in a text editor.</p>\n\
     <p>For source code and license information, see <a href=\"https://github.com/browsedns/captivedns\">here</a>.</p>\n\
     <p><a href=\"javascript:window.location.reload();\">Reload Page</a></p>\n\
 </body></html>";

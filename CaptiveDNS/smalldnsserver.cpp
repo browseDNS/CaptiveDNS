@@ -1,5 +1,11 @@
 #include "smalldnsserver.h"
 
+#include <QMessageBox>
+#include <iostream>
+#include "dnsserverwindow.h"
+#include "ui_dnsserverwindow.h"
+
+
 /* YourFriendlyDNS - A really awesome multi-platform (lin,win,mac,android) local caching and proxying dns server!
 Copyright (C) 2018  softwareengineer1 @ github.com/softwareengineer1
 Support my work by sending me some Bitcoin or Bitcoin Cash in the value of what you valued one or more of my software projects,
@@ -73,9 +79,33 @@ SmallDNSServer::SmallDNSServer(QObject *parent)
     //     connect(dnscrypt, &DNSCrypt::decryptedLookupDoneSendResponseNow, this, &SmallDNSServer::decryptedLookupDoneSendResponseNow);
 }
 
+void SmallDNSServer::displayErrorPopup(QString error)
+{
+    // run code on the main thread
+    // TODO: not working for some reason, crashes with an error about main threads still
+    // QMetaObject::invokeMethod(this, [error]() {
+    //     QMessageBox::critical(0, "Error", error);
+    // });
+
+    QString msg = "Error: " + error + "\n(Is another DNS server already running?)";
+    DNSServerWindow::mainUi->dnsStatus->setText(msg);
+    DNSServerWindow::mainUi->dnsStatus->setStyleSheet("color: red");
+
+}
+
 bool SmallDNSServer::startServer(QHostAddress address, quint16 port, bool reuse)
 { 
-    return serversock.bind(address, port, reuse ? QUdpSocket::ReuseAddressHint : QUdpSocket::DefaultForPlatform);
+    bool res = serversock.bind(address, port, reuse ? QUdpSocket::ReuseAddressHint : QUdpSocket::DefaultForPlatform);
+
+    printf("SmallDNSServer::startServer() %s:%d\n", address.toString().toUtf8().data(), port);
+    printf("SmallDNSServer::startServer() %s\n", res ? "success" : "failed");
+    if (!res) {
+        printf("SmallDNSServer::startServer() %s\n", serversock.errorString().toUtf8().data());
+        // display qt error popup
+        emit displayErrorPopup(serversock.errorString());
+    }
+
+    return res;
 }
 
 void SmallDNSServer::clearDNSCache()
@@ -240,30 +270,16 @@ void SmallDNSServer::processDNSRequests()
         bool shouldCacheDomain, useDedicatedDNSCryptProviderToResolveV2And3Hosts = false;
         quint32 customIP = ipToRespondWith;
         std::string domain = (char*)dns.domainString.toUtf8().data();
-        if(whitelistmode)
+        ListEntry *blackListed = getListEntry(domain, TYPE_BLACKLIST);
+        if(blackListed)
         {
-            ListEntry *whiteListed = getListEntry(domain, TYPE_WHITELIST);
-            if(whiteListed)
-            {
-                qDebug() << "Matched WhiteList!" << whiteListed->hostname << "to:" << dns.domainString;
-                //It's whitelist mode and in the whitelist, so it should return a real IP! Unless you've manually specified an IP
-                if(whiteListed->ip != 0)
-                    customIP = whiteListed->ip;
-            }
-            shouldCacheDomain = (whiteListed != nullptr);
+            qDebug() << "Matched BlackList!" << blackListed->hostname << "to:" << dns.domainString;
+            //It's blacklist mode and in the blacklist, so it should return your custom IP! And your manually specified one if you did specify a particular one
+            if(blackListed->ip != 0)
+                customIP = blackListed->ip;
         }
-        else
-        {
-            ListEntry *blackListed = getListEntry(domain, TYPE_BLACKLIST);
-            if(blackListed)
-            {
-                qDebug() << "Matched BlackList!" << blackListed->hostname << "to:" << dns.domainString;
-                //It's blacklist mode and in the blacklist, so it should return your custom IP! And your manually specified one if you did specify a particular one
-                if(blackListed->ip != 0)
-                    customIP = blackListed->ip;
-            }
-            shouldCacheDomain = (blackListed == nullptr);
-        }
+        shouldCacheDomain = (blackListed == nullptr);
+
         if(shouldCacheDomain)
         {
             //Trying to exclude local hostnames from leaking
@@ -313,27 +329,12 @@ void SmallDNSServer::processDNSRequests()
                 dns.senderPort = senderPort;
                 dns.ttl = dnsTTL;
 
-                if(dnscryptEnabled)
-                {
-                    qDebug() << "Making encrypted DNS request type:" << dns.question.qtype << "for domain:" << dns.domainString << "request id:" << dns.header.id << "datagram:" << datagram;
-                    if(useDedicatedDNSCryptProviderToResolveV2And3Hosts)
-                    {
-                        // dnscrypt->setProvider(dedicatedDNSCrypter);
-                        qDebug() << "Using dedicated DNSCrypt provider to resolve DoH/DoTLS provider's host:" << dns.domainString;
-                    }
-                    // else 
-                        // dnscrypt->setProvider(selectRandomDNSCryptServer());
-
-                    // dnscrypt->makeEncryptedRequest(dns);
-                }
-                else
-                {
-                    qDebug() << "Making DNS request type:" << dns.question.qtype << "for domain:" << dns.domainString << "request id:" << dns.header.id << "datagram:" << datagram;
-                    QString server = selectRandomDNSServer();
-                    quint16 serverPort = DNSInfo::extractPort(server);
-                    if(serverPort == 0 || serverPort == 443) serverPort = 53;
-                    clientsock.writeDatagram(datagram, QHostAddress(server), serverPort);
-                }
+               
+                qDebug() << "Making DNS request type:" << dns.question.qtype << "for domain:" << dns.domainString << "request id:" << dns.header.id << "datagram:" << datagram;
+                QString server = selectRandomDNSServer();
+                quint16 serverPort = DNSInfo::extractPort(server);
+                if(serverPort == 0 || serverPort == 443) serverPort = 53;
+                clientsock.writeDatagram(datagram, QHostAddress(server), serverPort);
 
                 InitialResponse *ir = new InitialResponse(dns);
                 if(ir)

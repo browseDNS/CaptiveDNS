@@ -51,6 +51,8 @@ public:
     explicit DNSServerWindow(QWidget *parent = 0);
     ~DNSServerWindow();
 
+    static Ui::DNSServerWindow* mainUi;
+
 signals:
     void displayCache(const std::vector<DNSInfo> &cache);
     void clearSources();
@@ -85,6 +87,7 @@ private slots:
     void on_secondAddButton_clicked();
     void on_settingsButton_clicked();
     void on_cacheViewButton_clicked();
+    
 
 private:
     Ui::DNSServerWindow *ui;

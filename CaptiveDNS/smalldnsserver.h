@@ -74,6 +74,10 @@ bool GeneralTextCompare(
         char cAltTerminator = '\0'    // For function names, for example, you can stop at the first '('
 );
 
+namespace Ui {
+class DNSServerWindow;
+}
+
 class SmallDNSServer : public QObject
 {
     Q_OBJECT
@@ -98,6 +102,7 @@ public:
     // DNSCrypt *dnscrypt;
 
 private:
+    Ui::DNSServerWindow *ui;
     ListEntry* getListEntry(const std::string &tame, int listType);
     DNSInfo* getCachedEntry(const QString &byDomain, quint16 andType);
     void parseAndRespond(QByteArray &datagram, DNSInfo &dns);
@@ -119,6 +124,7 @@ public slots:
     void clearDNSCache();
     void deleteEntriesFromCache(std::vector<ListEntry> entries);
     void decryptedLookupDoneSendResponseNow(QByteArray decryptedResponse, DNSInfo &dns);
+    void displayErrorPopup(QString error);
 
 private slots:
     void processDNSRequests();

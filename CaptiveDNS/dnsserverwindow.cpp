@@ -30,12 +30,16 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+Ui::DNSServerWindow* DNSServerWindow::mainUi = NULL;
+
 DNSServerWindow::DNSServerWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::DNSServerWindow)
 {
     ui->setupUi(this);
     qRegisterMetaType<ListEntry>("ListEntry");
     qRegisterMetaType<std::vector<ListEntry>>("std::vector<ListEntry>");
     qRegisterMetaType<QHostAddress>("QHostAddress");
+    
+    DNSServerWindow::mainUi = ui;
 
     settingspath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir d{settingspath};
@@ -159,6 +163,39 @@ void DNSServerWindow::listeningIPsUpdate()
 
     if(ipslist.size() > 0)
     {
+        // sort the ipslist so that the first one is the one we want to respond with
+        // (eg. prioritize 192.168.x.x over 10.x.x.x, over 172.16.x.x, etc.)
+
+        // sort the list
+        std::sort(ipslist.begin(), ipslist.end());
+
+        // check for 10.x.x.x
+        for (int i = 0; i < ipslist.size(); i++)
+        {
+            if((ipslist[i] & 0xFF000000) == 0x0A000000)
+            {
+                // move it to the front
+                ipslist.prepend(ipslist[i]);
+                ipslist.remove(i+1);
+                break;
+            }
+        }
+
+        // check for 192.168.x.x
+        for (int i = 0; i < ipslist.size(); i++)
+        {
+            if((ipslist[i] & 0xFFFF0000) == 0xC0A80000)
+            {
+                // move it to the front
+                ipslist.prepend(ipslist[i]);
+                ipslist.remove(i+1);
+                break;
+            }
+        }
+
+        // really, which IP to use should be a choice in the UI
+        // but for now we'll just use the first one and sort the list
+
         server->listeningIPs = ipslist;
     }
     if(ipv6slist.size() > 0)
@@ -498,7 +535,6 @@ bool DNSServerWindow::settingsLoad()
 
     // blacklist only (allow all non-captive portal domains)
     server->whitelistmode = false;
-    on_blacklistButton_clicked();
     
     // no settings, so no initial mode
     server->initialMode = false;
@@ -534,35 +570,7 @@ void DNSServerWindow::on_saveButton_clicked()
 
 void DNSServerWindow::on_removeButton_clicked()
 {
-    // auto selected = ui->dnslist->selectedItems();
-    // for(QTreeWidgetItem *i : selected)
-    // {
-    //     if(server->whitelistmode)
-    //     {
-    //         for(int x = 0; x < server->whitelist.size(); x++)
-    //         {
-    //             if(i->text(1) == server->whitelist[x].hostname)
-    //             {
-    //                 qDebug() << "Removing from whitelist:" << i->text(1);
-    //                 server->whitelist.remove(x);
-    //                 break;
-    //             }
-    //         }
-    //     }
-    //     else
-    //     {
-    //         for(int x = 0; x < server->blacklist.size(); x++)
-    //         {
-    //             if(i->text(1) == server->blacklist[x].hostname)
-    //             {
-    //                  qDebug() << "Removing from blacklist:" << i->text(1);
-    //                 server->blacklist.remove(x);
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
-    // qDeleteAll(selected);
+    // blanked out
 }
 
 void DNSServerWindow::on_hostnameEdit_returnPressed()
@@ -578,41 +586,7 @@ void DNSServerWindow::on_ipEdit_returnPressed()
 void DNSServerWindow::on_secondAddButton_clicked()
 {
     bool alreadyAdded = false;
-    // auto selected = ui->dnsqueries->selectedItems();
-    // if(server->whitelistmode)
-    // {   
-    //     for(QTreeWidgetItem *i : selected)
-    //     {
-    //         for(ListEntry &e : server->whitelist)
-    //         {
-    //             if(e.hostname == i->text(1))
-    //             {
-    //                 alreadyAdded = true;
-    //                 break;
-    //             }
-    //         }
-
-    //         if(!alreadyAdded)
-    //             server->whitelist.append(ListEntry(i->text(1)));
-    //     }
-    // }
-    // else
-    // {
-    //     for(QTreeWidgetItem *i : selected)
-    //     {
-    //         for(ListEntry &e : server->blacklist)
-    //         {
-    //             if(e.hostname == i->text(1))
-    //             {
-    //                 alreadyAdded = true;
-    //                 break;
-    //             }
-    //         }
-
-    //         if(!alreadyAdded)
-    //             server->blacklist.append(ListEntry(i->text(1)));
-    //     }
-    // }
+    // blanked out
     refreshList();
 }
 void DNSServerWindow::on_settingsButton_clicked()

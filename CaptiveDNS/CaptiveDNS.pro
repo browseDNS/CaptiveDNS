@@ -64,6 +64,7 @@ FORMS += \
     cacheviewer.ui
 
 CONFIG += mobility
+
 MOBILITY = 
 
 DISTFILES += \
