@@ -31,9 +31,9 @@ jobs:
           zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS.dmg
         elif [[ "${{ matrix.os }}" == "windows" ]]; then
           mkdir -p ./CaptiveDNS/CaptiveDNS
-          ls -lastr ./CaptiveDNS/release
           cp ./CaptiveDNS/release/CaptiveDNS.exe ./CaptiveDNS/CaptiveDNS
           windeployqt ./CaptiveDNS/CaptiveDNS/CaptiveDNS.exe
+          choco install -y zip
           zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS
         else
           zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS
