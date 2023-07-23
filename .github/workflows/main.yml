@@ -22,18 +22,18 @@ jobs:
     - uses: ilammy/msvc-dev-cmd@v1
     - name: Build for ${{ matrix.os }}
       shell: bash
-      run: cd CaptiveDNS && qmake && (make || nmake)
+      run: cd CaptiveDNS && qmake && (make || nmake || (rm /usr/bin/link && nmake))
     - name: Bundle for ${{ matrix.os }}
       shell: bash
       run: |
         if [[ "${{ matrix.os }}" == "macos" ]]; then
-          macdeployqt CaptiveDNS.app -dmg
-          zip -r ./CaptiveDNS-${{ matrix.os }}.zip CaptiveDNS.dmg
+          macdeployqt ./CaptiveDNS/CaptiveDNS.app -dmg
+          zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS.dmg
         elif [[ "${{ matrix.os }}" == "windows" ]]; then
           windeployqt CaptiveDNS.exe
-          zip -r ./CaptiveDNS-${{ matrix.os }}.zip CaptiveDNS.exe
+          zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS.exe
         else
-          zip -r ./CaptiveDNS-${{ matrix.os }}.zip CaptiveDNS
+          zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS
         fi
     - uses: actions/upload-artifact@v3
       with:
