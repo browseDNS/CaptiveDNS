@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - ci-release
   pull_request:
     branches:
       - main
@@ -19,6 +20,25 @@ jobs:
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
     - uses: ilammy/msvc-dev-cmd@v1
-    - name: Build ${{ matrix.platform }}
+    - name: Build for ${{ matrix.os }}
       shell: bash
-      run: cd CaptiveDNS && qmake && make
+      run: cd CaptiveDNS && qmake && (make || nmake || (rm /usr/bin/link && nmake))
+    - name: Bundle for ${{ matrix.os }}
+      shell: bash
+      run: |
+        if [[ "${{ matrix.os }}" == "macos" ]]; then
+          zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS.app
+        elif [[ "${{ matrix.os }}" == "windows" ]]; then
+          mkdir -p ./CaptiveDNS/CaptiveDNS
+          cp ./CaptiveDNS/release/CaptiveDNS.exe ./CaptiveDNS/CaptiveDNS
+          windeployqt ./CaptiveDNS/CaptiveDNS/CaptiveDNS.exe
+          choco install -y zip
+          cd ./CaptiveDNS/CaptiveDNS/
+          zip -r ../../CaptiveDNS-${{ matrix.os }}.zip .
+        else
+          zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS
+        fi
+    - uses: actions/upload-artifact@v3
+      with:
+        name: CaptiveDNS-${{ matrix.os }}
+        path: ./CaptiveDNS-${{ matrix.os }}.zip
