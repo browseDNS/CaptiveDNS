@@ -31,10 +31,8 @@ jobs:
           zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS.dmg
         elif [[ "${{ matrix.os }}" == "windows" ]]; then
           mkdir -p ./CaptiveDNS/CaptiveDNS
-          ls -lastr .
-          ls -lastr ./CaptiveDNS
-          ls -lastr ./CaptiveDNS/CaptiveDNS
-          # cp ./CaptiveDNS/CaptiveDNS.exe ./CaptiveDNS/CaptiveDNS
+          ls -lastr ./CaptiveDNS/release
+          cp ./CaptiveDNS/release/CaptiveDNS.exe ./CaptiveDNS/CaptiveDNS
           windeployqt ./CaptiveDNS/CaptiveDNS/CaptiveDNS.exe
           zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS
         else
