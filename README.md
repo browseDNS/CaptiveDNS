@@ -1,7 +1,9 @@
 # CaptiveDNS
 An app to help display a [captive portal](https://en.wikipedia.org/wiki/Captive_portal) browser to other devices on the network via DNS. Run this app on your computer, enter the DNS in the target device settings, and the captive portal should be displayed.
 
-Based on [YourFriendlyDNS](https://github.com/softwareengineer1/YourFriendlyDNS/), which contains many more advanced options for other self-hosted DNS use cases.
+This program is based on a stripped down verison of [YourFriendlyDNS](https://github.com/softwareengineer1/YourFriendlyDNS/). YourFriendlyDNS contains many more advanced options for self-hosted DNS and HTTP servers, and should be used instead of CaptiveDNS in those use cases.
+
+Download CaptiveDNS from on the [Releases](https://github.com/browseDNS/CaptiveDNS/releases) page. Nightly builds from the latest commits can be found [here](https://nightly.link/browsedns/captivedns/workflows/main/main).
 
 ## Screenshots
 <img src="preview.png" width="317" alt="CaptiveDNS Window Screenshot" /> <img src="preview2.png" width="440" alt="CaptiveDNS Landing page" />
