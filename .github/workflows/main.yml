@@ -28,10 +28,15 @@ jobs:
       run: |
         if [[ "${{ matrix.os }}" == "macos" ]]; then
           macdeployqt ./CaptiveDNS/CaptiveDNS.app -dmg
-          zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS.dmg
+          zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS.dmg
         elif [[ "${{ matrix.os }}" == "windows" ]]; then
-          windeployqt CaptiveDNS.exe
-          zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS.exe
+          mkdir -p ./CaptiveDNS/CaptiveDNS
+          ls -lastr .
+          ls -lastr ./CaptiveDNS
+          ls -lastr ./CaptiveDNS/CaptiveDNS
+          # cp ./CaptiveDNS/CaptiveDNS.exe ./CaptiveDNS/CaptiveDNS
+          windeployqt ./CaptiveDNS/CaptiveDNS/CaptiveDNS.exe
+          zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS
         else
           zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS
         fi
