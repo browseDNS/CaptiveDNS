@@ -27,14 +27,14 @@ jobs:
       shell: bash
       run: |
         if [[ "${{ matrix.os }}" == "macos" ]]; then
-          macdeployqt ./CaptiveDNS/CaptiveDNS.app -dmg
-          zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS.dmg
+          zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS.app
         elif [[ "${{ matrix.os }}" == "windows" ]]; then
           mkdir -p ./CaptiveDNS/CaptiveDNS
           cp ./CaptiveDNS/release/CaptiveDNS.exe ./CaptiveDNS/CaptiveDNS
           windeployqt ./CaptiveDNS/CaptiveDNS/CaptiveDNS.exe
           choco install -y zip
-          zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS
+          cd ./CaptiveDNS/CaptiveDNS/
+          zip -r ../../CaptiveDNS-${{ matrix.os }}.zip .
         else
           zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS
         fi
