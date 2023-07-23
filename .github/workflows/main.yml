@@ -20,10 +20,22 @@ jobs:
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
     - uses: ilammy/msvc-dev-cmd@v1
-    - name: Build ${{ matrix.platform }}
+    - name: Build for ${{ matrix.os }}
       shell: bash
-      run: cd CaptiveDNS && qmake
+      run: cd CaptiveDNS && qmake && (make || nmake)
+    - name: Bundle for ${{ matrix.os }}
+      shell: bash
+      run: |
+        if [[ "${{ matrix.os }}" == "macos" ]]; then
+          macdeployqt CaptiveDNS.app -dmg
+          zip -r ./CaptiveDNS-${{ matrix.os }}.zip CaptiveDNS.dmg
+        elif [[ "${{ matrix.os }}" == "windows" ]]; then
+          windeployqt CaptiveDNS.exe
+          zip -r ./CaptiveDNS-${{ matrix.os }}.zip CaptiveDNS.exe
+        else
+          zip -r ./CaptiveDNS-${{ matrix.os }}.zip CaptiveDNS
+        fi
     - uses: actions/upload-artifact@v3
       with:
-        name: Makefile.Release
-        path: ./CaptiveDNS/Makefile.Release
+        name: CaptiveDNS-${{ matrix.os }}
+        path: ./CaptiveDNS-${{ matrix.os }}.zip
