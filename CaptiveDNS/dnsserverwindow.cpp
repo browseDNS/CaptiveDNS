@@ -268,14 +268,6 @@ void DNSServerWindow::autoCaptureCaptivePortals()
 {
     // the list that is used is in smalldnsserver.cpp around line 60
 
-    // appendToBlacklist(ListEntry("ctest.cdn.nintendo.net"));
-    // appendToBlacklist(ListEntry("conntest.nintendowifi.net"));
-    // appendToBlacklist(ListEntry("detectportal.firefox.com"));
-    // appendToBlacklist(ListEntry("connectivitycheck.gstatic.com"));
-    // appendToBlacklist(ListEntry("connectivitycheck.android.com"));
-    // appendToBlacklist(ListEntry("clients1.google.com"));
-    // appendToBlacklist(ListEntry("clients3.google.com"));
-    // appendToBlacklist(ListEntry("captive.apple.com"));
     refreshList();
 }
 

@@ -22,6 +22,8 @@ connectivitycheck.android.com
 clients1.google.com
 clients3.google.com
 captive.apple.com
+ctest.p01.ctest.srv.nintendo.net
+www.msftconnecttest.com
 ```
 
 This list of domains cannot be configured within CaptiveDNS. To customize it further, check out [YourFriendlyDNS](https://github.com/softwareengineer1/YourFriendlyDNS/).

@@ -71,6 +71,8 @@ SmallDNSServer::SmallDNSServer(QObject *parent)
     blacklist.push_back(ListEntry("clients1.google.com"));
     blacklist.push_back(ListEntry("clients3.google.com"));
     blacklist.push_back(ListEntry("captive.apple.com"));
+    blacklist.push_back(ListEntry("ctest.p01.ctest.srv.nintendo.net"));
+    blacklist.push_back(ListEntry("www.msftconnecttest.com"));
 
     connect(&serversock, &QUdpSocket::readyRead, this, &SmallDNSServer::processDNSRequests);
     connect(&clientsock, &QUdpSocket::readyRead, this, &SmallDNSServer::processLookups);
