@@ -38,7 +38,7 @@ jobs:
         else
           zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS
         fi
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: CaptiveDNS-${{ matrix.os }}
         path: ./CaptiveDNS-${{ matrix.os }}.zip
