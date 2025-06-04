@@ -27,6 +27,7 @@ jobs:
       shell: bash
       run: |
         if [[ "${{ matrix.os }}" == "macos" ]]; then
+          macdeployqt ./CaptiveDNS/CaptiveDNS.app
           zip -r ./CaptiveDNS-${{ matrix.os }}.zip ./CaptiveDNS/CaptiveDNS.app
         elif [[ "${{ matrix.os }}" == "windows" ]]; then
           mkdir -p ./CaptiveDNS/CaptiveDNS
