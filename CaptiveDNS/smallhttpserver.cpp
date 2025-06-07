@@ -47,7 +47,8 @@ Content-Encoding: %2
 Content-Length: %3
 Accept-Ranges: %4
 Date: %5
-Connection: %6)";
+Connection: %6
+X-Organization: Nintendo)";
     response_header += "\r\n\r\n";
     contentType = "text/html", encodingType = "identity", acceptRanges = "bytes", connection = "close";
 
@@ -168,6 +169,7 @@ void SmallHTTPServer::returnIndexPage()
     QTcpSocket *socket = nextPendingConnection();
     connect(socket, &QTcpSocket::disconnected, socket, &QObject::deleteLater);
 
+    html = "ok";
     QString contentLength = QString("%1").arg(html.size());
     QString currentDateTime = QDateTime::currentDateTime().toString();
     QString response = response_header.arg(contentType).arg(encodingType).arg(contentLength).arg(acceptRanges).arg(currentDateTime).arg(connection);
